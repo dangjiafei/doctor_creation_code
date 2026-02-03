@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>招募大厅 - 创作者中心</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/script.js"></script>
+</head>
+<body>
+    <!-- 组件加载脚本 -->
+    <script>
+        async function loadComponents() {
+            // 加载顶部导航栏
+            const headerResponse = await fetch('components/header.html');
+            const headerContent = await headerResponse.text();
+            document.getElementById('header-placeholder').innerHTML = headerContent;
+            
+            // 加载左侧侧边栏
+            const sidebarResponse = await fetch('components/sidebar.html');
+            const sidebarContent = await sidebarResponse.text();
+            document.getElementById('sidebar-placeholder').innerHTML = sidebarContent;
+            
+            // 在侧边栏加载完成后初始化菜单
+            if (typeof initializeMenu === 'function') {
+                initializeMenu();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadComponents);
+    </script>
+
+    <!-- 顶部导航栏占位符 -->
+    <div id="header-placeholder"></div>
+
+    <!-- 主体布局 -->
+    <div class="main-container">
+        <!-- 左侧侧边栏占位符 -->
+        <div id="sidebar-placeholder"></div>
+
+        <!-- 主要内容区域 -->
+        <main class="content-area">
+            <!-- 页面标题 -->
+            <div class="page-header" style="margin-bottom: 32px;">
+                <p style="color: var(--text-secondary); margin: 8px 0 0 0;">公开的学术活动招募平台，所有符合条件的医生均可报名参与</p>
+            </div>
+            
+            <!-- Banner图 -->
+            <div class="recruitment-banner" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 32px; margin-bottom: 32px; color: white; text-align: center; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);">
+                <h2 style="font-size: 2rem; font-weight: var(--font-weight-bold); margin: 0 0 12px 0;">2026年度医学学术活动招募</h2>
+                <p style="font-size: 1rem; margin: 0 0 24px 0; opacity: 0.9;">选择符合您专业领域的学术活动，与行业精英共创优质内容，让好内容得到广泛传播，助力医学观念教育</p>
+                
+                <div style="margin-top: 24px; display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: var(--font-weight-bold); margin: 0 0 6px 0;">50+</div>
+                        <div style="opacity: 0.8; font-size: 0.9rem;">优质学术活动</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: var(--font-weight-bold); margin: 0 0 6px 0;">3000+</div>
+                        <div style="opacity: 0.8; font-size: 0.9rem;">医生参与</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: var(--font-weight-bold); margin: 0 0 6px 0;">100000+</div>
+                        <div style="opacity: 0.8; font-size: 0.9rem;">内容触达医生</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 添加响应式样式 -->
+            <style>
+            @media (max-width: 768px) {
+                .recruitment-banner {
+                    padding: 20px !important;
+                    margin-bottom: 20px !important;
+                }
+                .recruitment-banner h2 {
+                    font-size: 1.5rem !important;
+                    margin-bottom: 8px !important;
+                }
+                .recruitment-banner p {
+                    font-size: 0.9rem !important;
+                    margin-bottom: 16px !important;
+                    line-height: 1.4;
+                }
+                .recruitment-banner > div {
+                    margin-top: 16px !important;
+                    gap: 20px !important;
+                }
+                .recruitment-banner > div > div {
+                    flex: 1;
+                    min-width: 80px;
+                }
+                .recruitment-banner > div > div > div:first-child {
+                    font-size: 1.25rem !important;
+                    margin-bottom: 4px !important;
+                }
+                .recruitment-banner > div > div > div:last-child {
+                    font-size: 0.8rem !important;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .recruitment-banner {
+                    padding: 16px !important;
+                }
+                .recruitment-banner h2 {
+                    font-size: 1.25rem !important;
+                }
+                .recruitment-banner p {
+                    font-size: 0.85rem !important;
+                }
+                .recruitment-banner > div {
+                    gap: 16px !important;
+                }
+            }
+            </style>
+            
+            <!-- 服务类型标签 -->
+            <div class="service-tabs" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div style="display: flex; gap: 16px;">
+                    <div class="service-tab active" data-tab="recruitment">热门招募活动</div>
+                    <div class="service-tab" data-tab="invitation">专家邀约点评</div>
+                </div>
+                
+                <!-- 筛选区域 -->
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="position: relative;">
+                        <select id="followFilter" style="padding: 8px 12px; border: 1px solid #e8e8e8; border-radius: 8px; background-color: white; color: var(--text-primary); font-size: 0.85rem; cursor: pointer; width: 120px; appearance: none; padding-right: 2.5rem;">
+                            <option value="all">全部</option>
+                            <option value="followed" selected>已关注</option>
+                            <option value="unfollowed">未关注</option>
+                        </select>
+                        <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 招募活动内容 -->
+            <div class="tab-content active" id="recruitment">
+                
+                <!-- 活动卡片列表 -->
+                <div class="activity-card-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; margin-bottom: 32px;">
+                    <!-- 活动卡片 1 -->
+                    <div class="activity-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 活动标签 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="background-color: #e6f7ee; color: #22c55e; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">招募中</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffb800" stroke="#ffb800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;" onclick="toggleFavorite(this)" title="已收藏" data-favorite="true">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0 0 8px 0;">2026年心血管疾病防治新进展论坛</h3>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                                <span>活动类型：学术会议</span>
+                                
+                            </div>
+                        </div>
+                        
+                        <!-- 活动简介 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <h4 style="font-size: 0.9rem; color: var(--text-primary); font-weight: 500; margin: 0 0 8px 0;">活动简介</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">本论坛旨在探讨心血管疾病防治的最新进展，邀请国内知名专家分享前沿研究成果和临床经验，为广大心血管医生提供一个交流学习的平台。参会者将有机会获得国家级继续教育学分，并与行业专家进行深入交流。</p>
+                        </div>
+                        
+                        <!-- 活动信息 -->
+                        <div style="padding: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                        <span>截止：2026-02-28</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <span>23人已报名</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn view" onclick="window.location.href='podcast-detail.html?id=1'" style="flex: 1; padding: 10px;">查看详情</button>
+                                <button class="action-btn edit" onclick="window.location.href='podcast-detail.html?id=1'" style="flex: 1; padding: 10px; background-color: #667eea; color: white; border: none;">立即报名</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 活动卡片 2 -->
+                    <div class="activity-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 活动标签 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="background-color: #e6f7ee; color: #22c55e; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">招募中</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffb800" stroke="#ffb800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;" onclick="toggleFavorite(this)" title="已收藏" data-favorite="true">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0 0 8px 0;">糖尿病患者管理优化案例征集</h3>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                                <span>活动类型：案例征集</span>
+                                
+                            </div>
+                        </div>
+                        
+                        <!-- 活动简介 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <h4 style="font-size: 0.9rem; color: var(--text-primary); font-weight: 500; margin: 0 0 8px 0;">活动简介</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">本活动面向全国内分泌医生征集糖尿病患者管理的优秀案例，旨在推广规范化的糖尿病管理理念和实践经验。优秀案例将有机会收录进《糖尿病管理指南》，并获得专业导师的一对一指导。</p>
+                        </div>
+                        
+                        <!-- 活动信息 -->
+                        <div style="padding: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                        <span>截止：2026-03-15</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <span>18人已报名</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn view" onclick="window.location.href='podcast-detail.html?id=2'" style="flex: 1; padding: 10px;">查看详情</button>
+                                <button class="action-btn edit" onclick="window.location.href='podcast-detail.html?id=2'" style="flex: 1; padding: 10px; background-color: #667eea; color: white; border: none;">立即报名</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 活动卡片 3 -->
+                    <div class="activity-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 活动标签 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="background-color: #fff7e6; color: #ff7d00; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">即将截止</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffb800" stroke="#ffb800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;" onclick="toggleFavorite(this)" title="已收藏" data-favorite="true">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0 0 8px 0;">神经内科疑难病例讨论</h3>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                                <span>活动类型：病例讨论</span>
+                                
+                            </div>
+                        </div>
+                        
+                        <!-- 活动简介 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <h4 style="font-size: 0.9rem; color: var(--text-primary); font-weight: 500; margin: 0 0 8px 0;">活动简介</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">本次神经内科疑难病例讨论活动将聚焦临床实践中的难点问题，邀请行业专家进行在线点评和指导。参与讨论的医生可获得继续教育学分，优秀参与者还有机会获得专家一对一指导的宝贵机会。</p>
+                        </div>
+                        
+                        <!-- 活动信息 -->
+                        <div style="padding: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                        <span>截止：2026-01-15</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <span>15人已报名</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn view" onclick="window.location.href='podcast-detail.html?id=3'" style="flex: 1; padding: 10px;">查看详情</button>
+                                <button class="action-btn edit" onclick="window.location.href='podcast-detail.html?id=3'" style="flex: 1; padding: 10px; background-color: #667eea; color: white; border: none;">立即报名</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 活动卡片 4 -->
+                    <div class="activity-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 活动标签 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="background-color: #f0f9ff; color: #3b82f6; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">即将开始</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffb800" stroke="#ffb800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;" onclick="toggleFavorite(this)" title="已收藏" data-favorite="true">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0 0 8px 0;">呼吸系统疾病诊治新进展</h3>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                                <span>活动类型：医学播客</span>
+                                
+                            </div>
+                        </div>
+                        
+                        <!-- 活动简介 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <h4 style="font-size: 0.9rem; color: var(--text-primary); font-weight: 500; margin: 0 0 8px 0;">活动简介</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">本活动邀请知名呼吸科专家录制系列播客，分享呼吸系统疾病诊治的最新进展和临床经验。播客将在多家平台同步上线，参与者可根据播客播放量获得额外收益，是提升专业影响力和获取收益的双重机会。</p>
+                        </div>
+                        
+                        <!-- 活动信息 -->
+                        <div style="padding: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                        <span>截止：2026-02-10</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <span>12人已报名</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn view" onclick="window.location.href='podcast-detail.html?id=4'" style="flex: 1; padding: 10px;">查看详情</button>
+                                <button class="action-btn edit" onclick="window.location.href='podcast-detail.html?id=4'" style="flex: 1; padding: 10px; background-color: #667eea; color: white; border: none;">立即报名</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 分页控件 -->
+                <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 16px;">
+                    <button class="page-btn" disabled>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 专家邀约点评内容 -->
+            <div class="tab-content" id="invitation" style="display: none;">
+                
+                <!-- 专家邀约点评列表 -->
+                <div class="invitation-card-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; margin-bottom: 32px;">
+                    <!-- 点评卡片 1 -->
+                    <div class="invitation-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 作品信息 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0; line-height: 1.4;">冠状动脉介入治疗病例分析</h3>
+                                <span style="background-color: #e6f7ee; color: #22c55e; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">在线互动病例</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>创作者：张医生</span>
+                            </div>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <div><strong style="color: var(--text-primary);">职称：</strong>主任医师</div>
+                                <div><strong style="color: var(--text-primary);">科室：</strong>心内科</div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: var(--text-primary); font-size: 0.85rem;">创作者评语：</strong>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">这是我近期遇到的一个典型病例，希望能得到专家的指导和点评。</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #ff7d00;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>截止时间：2026-01-20</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div style="padding: 16px; background-color: #ffffff; border-top: 1px solid #f0f2f5;">
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn accept" onclick="alert('已接受点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #667eea !important; color: white !important; border: none !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    接受
+                                </button>
+                                <button class="action-btn reject" onclick="alert('已拒绝点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #ffffff !important; color: #ff4d4f !important; border: 1px solid #e8e8e8 !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    拒绝
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 点评卡片 2 -->
+                    <div class="invitation-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 作品信息 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0; line-height: 1.4;">高血压患者的个体化治疗策略</h3>
+                                <span style="background-color: #f0f9ff; color: #3b82f6; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">医学播客</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>创作者：李医生</span>
+                            </div>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <div><strong style="color: var(--text-primary);">职称：</strong>副主任医师</div>
+                                <div><strong style="color: var(--text-primary);">科室：</strong>内分泌科</div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: var(--text-primary); font-size: 0.85rem;">创作者评语：</strong>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">探讨高血压患者个体化治疗的最新进展和临床实践经验，希望能得到专家的点评。</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #ff7d00;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>截止时间：2026-01-25</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div style="padding: 16px; background-color: #ffffff; border-top: 1px solid #f0f2f5;">
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn accept" onclick="alert('已接受点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #667eea !important; color: white !important; border: none !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    接受
+                                </button>
+                                <button class="action-btn reject" onclick="alert('已拒绝点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #ffffff !important; color: #ff4d4f !important; border: 1px solid #e8e8e8 !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    拒绝
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 点评卡片 3 -->
+                    <div class="invitation-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 作品信息 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0; line-height: 1.4;">糖尿病足的预防与治疗</h3>
+                                <span style="background-color: #e6f7ee; color: #22c55e; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">在线互动病例</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>创作者：王医生</span>
+                            </div>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <div><strong style="color: var(--text-primary);">职称：</strong>主治医师</div>
+                                <div><strong style="color: var(--text-primary);">科室：</strong>内分泌科</div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: var(--text-primary); font-size: 0.85rem;">创作者评语：</strong>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">分享糖尿病足的预防和治疗经验，希望能得到专家的指导和建议。</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #ff7d00;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>截止时间：2026-01-30</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div style="padding: 16px; background-color: #ffffff; border-top: 1px solid #f0f2f5;">
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn accept" onclick="alert('已接受点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #667eea !important; color: white !important; border: none !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    接受
+                                </button>
+                                <button class="action-btn reject" onclick="alert('已拒绝点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #ffffff !important; color: #ff4d4f !important; border: 1px solid #e8e8e8 !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    拒绝
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 点评卡片 4 -->
+                    <div class="invitation-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 作品信息 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0; line-height: 1.4;">肺癌的早期诊断与治疗</h3>
+                                <span style="background-color: #f0f9ff; color: #3b82f6; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">医学播客</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>创作者：刘医生</span>
+                            </div>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <div><strong style="color: var(--text-primary);">职称：</strong>主任医师</div>
+                                <div><strong style="color: var(--text-primary);">科室：</strong>呼吸科</div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: var(--text-primary); font-size: 0.85rem;">创作者评语：</strong>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">探讨肺癌早期诊断和治疗的最新进展，希望能得到专家的点评和建议。</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #ff7d00;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>截止时间：2026-02-01</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div style="padding: 16px; background-color: #ffffff; border-top: 1px solid #f0f2f5;">
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn accept" onclick="alert('已接受点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #667eea !important; color: white !important; border: none !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    接受
+                                </button>
+                                <button class="action-btn reject" onclick="alert('已拒绝点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #ffffff !important; color: #ff4d4f !important; border: 1px solid #e8e8e8 !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    拒绝
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 点评卡片 5 -->
+                    <div class="invitation-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 作品信息 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0; line-height: 1.4;">脑卒中的康复治疗策略</h3>
+                                <span style="background-color: #e6f7ee; color: #22c55e; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">在线互动病例</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>创作者：陈医生</span>
+                            </div>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <div><strong style="color: var(--text-primary);">职称：</strong>副主任医师</div>
+                                <div><strong style="color: var(--text-primary);">科室：</strong>神经内科</div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: var(--text-primary); font-size: 0.85rem;">创作者评语：</strong>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">分享脑卒中患者康复治疗的临床经验和案例分析，希望能得到专家的指导。</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #ff7d00;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>截止时间：2026-02-05</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div style="padding: 16px; background-color: #ffffff; border-top: 1px solid #f0f2f5;">
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn accept" onclick="alert('已接受点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #667eea !important; color: white !important; border: none !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    接受
+                                </button>
+                                <button class="action-btn reject" onclick="alert('已拒绝点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #ffffff !important; color: #ff4d4f !important; border: 1px solid #e8e8e8 !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    拒绝
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 点评卡片 6 -->
+                    <div class="invitation-card" style="background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.3s ease; border: 1px solid #f0f2f5;">
+                        <!-- 作品信息 -->
+                        <div style="padding: 16px; border-bottom: 1px solid #f0f2f5;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <h3 style="font-size: 1.1rem; color: var(--text-primary); font-weight: var(--font-weight-semibold); margin: 0; line-height: 1.4;">慢性肾病的管理与治疗</h3>
+                                <span style="background-color: #f0f9ff; color: #3b82f6; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">医学播客</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>创作者：赵医生</span>
+                            </div>
+                            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                <div><strong style="color: var(--text-primary);">职称：</strong>主治医师</div>
+                                <div><strong style="color: var(--text-primary);">科室：</strong>肾内科</div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: var(--text-primary); font-size: 0.85rem;">创作者评语：</strong>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">探讨慢性肾病患者的长期管理和治疗策略，希望能得到专家的点评和建议。</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #ff7d00;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>截止时间：2026-02-10</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div style="padding: 16px; background-color: #ffffff; border-top: 1px solid #f0f2f5;">
+                            <div style="display: flex; gap: 12px;">
+                                <button class="action-btn accept" onclick="alert('已接受点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #667eea !important; color: white !important; border: none !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    接受
+                                </button>
+                                <button class="action-btn reject" onclick="alert('已拒绝点评邀请')" style="flex: 1; padding: 10px 16px !important; background-color: #ffffff !important; color: #ff4d4f !important; border: 1px solid #e8e8e8 !important; border-radius: 8px !important; font-weight: 500 !important; transition: all 0.2s ease !important; cursor: pointer !important; height: auto !important; width: auto !important; box-shadow: none !important;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    拒绝
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 页面加载完成后执行初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 调用菜单初始化函数
+            initializeMenu();
+            
+            // 服务类型标签页切换逻辑
+            const serviceTabs = document.querySelectorAll('.service-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            serviceTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有服务标签的活跃状态
+                    serviceTabs.forEach(t => t.classList.remove('active'));
+                    // 添加当前服务标签的活跃状态
+                    this.classList.add('active');
+                    
+                    // 隐藏所有内容区域
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        content.style.display = 'none';
+                    });
+                    
+                    // 显示对应的内容区域
+                    const targetTab = this.getAttribute('data-tab');
+                    const targetContent = document.getElementById(targetTab);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                        targetContent.style.display = 'block';
+                    }
+                });
+            });
+            
+            // 状态切换逻辑
+            const recordTabsContainers = document.querySelectorAll('.record-tabs');
+            recordTabsContainers.forEach(container => {
+                const recordTabs = container.querySelectorAll('.record-tab');
+                
+                recordTabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        // 移除当前容器中所有标签的active状态
+                        recordTabs.forEach(t => t.classList.remove('active'));
+                        // 为当前标签添加active状态
+                        this.classList.add('active');
+                    });
+                });
+            });
+            
+            // 是否关注筛选器逻辑
+            const followFilter = document.getElementById('followFilter');
+            followFilter.addEventListener('change', function() {
+                const selectedValue = this.value;
+                // 这里可以根据selectedValue实现筛选逻辑
+                console.log('Selected filter:', selectedValue);
+            });
+        });
+        
+        // 收藏切换函数
+        function toggleFavorite(element) {
+            const isFavorite = element.getAttribute('data-favorite') === 'true';
+            if (isFavorite) {
+                element.setAttribute('data-favorite', 'false');
+                element.setAttribute('title', '收藏');
+                element.querySelector('polygon').setAttribute('fill', 'none');
+                element.querySelector('polygon').setAttribute('stroke', '#bfbfbf');
+            } else {
+                element.setAttribute('data-favorite', 'true');
+                element.setAttribute('title', '已收藏');
+                element.querySelector('polygon').setAttribute('fill', '#ffb800');
+                element.querySelector('polygon').setAttribute('stroke', '#ffb800');
+            }
+        }
+    </script>
+</body>
+</html>
