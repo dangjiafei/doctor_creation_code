@@ -223,3 +223,217 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeServiceTabs();
     initializeRecordTabs();
 });
+
+// 病例创建页面相关功能
+
+// 添加题目功能
+function addQuestion(moduleId, questionType = 'single') {
+    console.log('添加题目到模块:', moduleId, '题目类型:', questionType);
+    // 这里可以添加题目到指定模块的逻辑
+}
+
+// 添加分页器功能
+function addPaginator(moduleId) {
+    console.log('在模块后添加分页器:', moduleId);
+    
+    // 查找对应模块的题目列表
+    const questionsList = document.getElementById(moduleId + '-questions');
+    if (questionsList) {
+        // 创建分页器元素
+        const paginator = document.createElement('div');
+        paginator.className = 'paginator';
+        paginator.style.cssText = `
+            margin: 20px 0;
+            padding: 16px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            text-align: center;
+        `;
+        
+        // 添加分页器内容
+        paginator.innerHTML = `
+            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                <button class="page-btn" style="padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 4px; background-color: white; cursor: pointer;">上一页</button>
+                <span style="margin: 0 8px;">第 1 页，共 1 页</span>
+                <button class="page-btn" style="padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 4px; background-color: white; cursor: pointer;">下一页</button>
+            </div>
+        `;
+        
+        // 绑定点击事件
+        const pageBtns = paginator.querySelectorAll('.page-btn');
+        pageBtns.forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                changePage(btn, index + 1);
+            });
+        });
+        
+        // 添加到题目列表中
+        questionsList.appendChild(paginator);
+        
+        // 显示成功提示
+        showNotification('成功添加分页器', 'success');
+    } else {
+        console.error('未找到题目列表元素:', moduleId + '-questions');
+        showNotification('添加分页器失败：未找到题目列表', 'error');
+    }
+}
+
+// 切换页码功能
+function changePage(button, pageNum) {
+    console.log('切换到页码:', pageNum);
+    // 这里可以添加切换页码的逻辑
+    
+    // 模拟页码切换效果
+    const paginator = button.closest('.paginator');
+    if (paginator) {
+        const pageInfo = paginator.querySelector('span');
+        if (pageInfo) {
+            pageInfo.textContent = `第 ${pageNum} 页，共 2 页`;
+        }
+        
+        // 更新按钮状态
+        const pageBtns = paginator.querySelectorAll('.page-btn');
+        pageBtns.forEach(btn => {
+            btn.style.backgroundColor = 'white';
+        });
+        button.style.backgroundColor = '#e0f2fe';
+    }
+}
+
+// 显示通知功能
+function showNotification(message, type = 'success') {
+    // 创建通知元素
+    const notification = document.createElement('div');
+    notification.className = `notification ${type} show`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        padding: 16px 24px;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 1000;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    `;
+    
+    // 设置不同类型的背景色
+    if (type === 'success') {
+        notification.style.backgroundColor = '#10b981';
+    } else if (type === 'error') {
+        notification.style.backgroundColor = '#ef4444';
+    } else if (type === 'warning') {
+        notification.style.backgroundColor = '#f59e0b';
+    }
+    
+    // 添加到页面
+    document.body.appendChild(notification);
+    
+    // 显示通知
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // 3秒后隐藏通知
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// 创建WeakMap来存储菜单和目标元素之间的关联
+const menuTargetMap = new WeakMap();
+
+// 题目菜单显示/隐藏功能
+function showQuestionMenu(element) {
+    // 移除所有现有的菜单
+    document.querySelectorAll('.question-type-menu').forEach(menu => {
+        menu.style.display = 'none';
+    });
+    
+    const menu = element.nextElementSibling;
+    if (menu && menu.classList.contains('question-type-menu')) {
+        // 获取按钮的位置信息
+        const rect = element.getBoundingClientRect();
+        
+        // 移除所有内联样式，确保完全由JavaScript控制
+        menu.removeAttribute('style');
+        
+        // 设置菜单样式
+        menu.style.display = 'block';
+        menu.style.position = 'fixed';
+        menu.style.top = rect.bottom + window.scrollY + 'px';
+        menu.style.left = rect.left + window.scrollX + 'px';
+        menu.style.width = '180px';
+        menu.style.backgroundColor = 'white';
+        menu.style.border = '1px solid #e2e8f0';
+        menu.style.borderRadius = '6px';
+        menu.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+        menu.style.zIndex = '999999';
+        menu.style.overflow = 'visible';
+        menu.style.minHeight = '200px';
+        menu.style.maxHeight = '300px';
+        menu.style.padding = '0';
+        menu.style.margin = '0';
+        menu.style.listStyle = 'none';
+        
+        // 将菜单移动到body的直接子元素中，避免受到父元素的限制
+        document.body.appendChild(menu);
+        
+        // 确保菜单中的所有子元素都能正确显示
+        const menuItems = menu.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            item.style.display = 'block';
+            item.style.padding = '10px 16px';
+            item.style.cursor = 'pointer';
+            item.style.fontSize = '14px';
+            item.style.color = '#374151';
+            item.style.transition = 'all 0.2s ease';
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            item.style.gap = '8px';
+            
+            // 为菜单项添加悬停效果
+            item.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f1f5f9';
+            });
+            item.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'transparent';
+            });
+        });
+        
+        // 存储菜单和目标元素之间的关联
+        menuTargetMap.set(menu, element);
+    }
+}
+
+function hideQuestionMenu(element) {
+    // 找到所有的题目类型菜单
+    const menus = document.querySelectorAll('.question-type-menu');
+    menus.forEach(menu => {
+        // 隐藏菜单
+        menu.style.display = 'none';
+        
+        // 如果菜单有存储的目标元素，将其恢复到目标元素的后面
+        const targetElement = menuTargetMap.get(menu);
+        if (targetElement) {
+            // 将菜单插入到目标元素的后面
+            targetElement.parentNode.insertBefore(menu, targetElement.nextSibling);
+            // 清除存储的关联
+            menuTargetMap.delete(menu);
+        }
+    });
+}
+
+// 自动保存功能
+function autoSave() {
+    console.log('自动保存中...');
+    // 这里可以添加自动保存的逻辑
+}
