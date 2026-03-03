@@ -873,6 +873,13 @@
                         </svg>
                         保存
                     </button>
+                    <button type="button" id="save-and-submit-btn" style="padding: 8px 16px; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background-color: #ff7d00; color: white; transition: all 0.3s ease;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        保存并投稿
+                    </button>
                 </div>
             </div>
             
@@ -2044,13 +2051,7 @@
                                 <div id="question-status" style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">开始添加互动题目，增强病例的教学价值</div>
                                 
                                 <!-- 题目指南（始终显示） -->
-                                <div id="question-guide" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
-                                    <p style="font-size: 12px; color: #6b7280; margin: 0 0 8px 0;">题目添加建议：</p>
-                                    <ul style="font-size: 12px; color: #6b7280; margin: 0; padding-left: 16px;">
-                                        <li style="margin-bottom: 4px;">题目内容应围绕病例的核心知识点</li>
-                                        <li style="margin-bottom: 4px;">题目内容应围绕病例的核心知识点</li>
-                                    </ul>
-                                </div>
+
                             </div>
                             
                             <script>
@@ -2335,6 +2336,17 @@
         if (saveDraftBtn) {
             saveDraftBtn.addEventListener('click', function() {
                 showNotification('草稿已保存', 'success');
+            });
+        }
+
+        // 保存并投稿功能
+        const saveAndSubmitBtn = document.getElementById('save-and-submit-btn');
+        if (saveAndSubmitBtn) {
+            saveAndSubmitBtn.addEventListener('click', function() {
+                // 校验必填项
+                if (validateForm()) {
+                    showNotification('病例已保存并提交成功', 'success');
+                }
             });
         }
 
